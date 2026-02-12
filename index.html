@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>45-Day Execution Tracker</title>
-    <meta name="description" content="Track your 45-day web development journey with daily tasks, income tracking, and progress history">
+    <title>Execution Tracker - Clarity Mode</title>
+    <meta name="description" content="Customizable execution tracker for 21/45/75/90 day challenges">
     <meta name="theme-color" content="#1F4788">
     
     <!-- PWA Configuration -->
@@ -57,13 +57,67 @@
             color: #C00000;
         }
 
-        .stack-locked {
-            background: #D9E1F2;
+        .clarity-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 12px;
             border-radius: 4px;
             margin: 10px 0;
             font-weight: bold;
             text-align: center;
+        }
+
+        .day-selector {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .day-selector h3 {
+            margin-bottom: 15px;
+            color: #1F4788;
+        }
+
+        .day-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .day-btn {
+            background: white;
+            border: 2px solid #1F4788;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #1F4788;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .day-btn:hover {
+            background: #1F4788;
+            color: white;
+        }
+
+        .day-btn.active {
+            background: #1F4788;
+            color: white;
+        }
+
+        .custom-days {
+            margin-top: 15px;
+        }
+
+        .custom-days input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
         }
 
         .stats {
@@ -179,27 +233,18 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: bold;
-        }
-
-        .phase-foundation { background: #E2EFDA; color: #2D5016; }
-        .phase-portfolio { background: #FCE4D6; color: #833C0C; }
-        .phase-monetization { background: #FFF2CC; color: #7F6000; }
-        .phase-outreach { background: #F4B084; color: #833C0C; }
-
-        .task {
-            font-size: 16px;
-            margin: 10px 0;
-            padding-left: 39px;
-        }
-
-        .hours {
-            display: inline-block;
-            background: #1F4788;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2px 8px;
+        }
+
+        .task-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 12px;
-            margin-left: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            font-family: inherit;
         }
 
         .notes-input {
@@ -210,6 +255,7 @@
             border-radius: 4px;
             font-family: inherit;
             resize: vertical;
+            min-height: 60px;
         }
 
         .rules-list {
@@ -264,6 +310,14 @@
 
         .btn:hover {
             background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
         }
 
         .income-list {
@@ -323,7 +377,28 @@
             display: none;
         }
 
+        .setup-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
 
+        .setup-screen h2 {
+            color: #1F4788;
+            margin-bottom: 30px;
+        }
+
+        .reset-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #ffe6e6;
+            border-radius: 8px;
+            border: 2px solid #f44336;
+        }
+
+        .reset-section h3 {
+            color: #f44336;
+            margin-bottom: 10px;
+        }
 
         @media (max-width: 600px) {
             body {
@@ -338,9 +413,8 @@
                 flex-direction: column;
             }
 
-            .task {
-                padding-left: 0;
-                margin-top: 10px;
+            .day-buttons {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -349,168 +423,155 @@
     <div class="container">
 
         <div class="header">
-            <h1>🎯 45-DAY WEB DEVELOPMENT EXECUTION TRACKER</h1>
-            <div class="warning">⚠️ NO SWITCHING | NO DRAMA | NO MERCHANT NAVY RESEARCH</div>
-            <div class="stack-locked">STACK LOCKED: HTML + CSS + JavaScript + GitHub + Deploy</div>
+            <h1>🎯 EXECUTION TRACKER - CLARITY MODE</h1>
+            <div class="warning">⚠️ NO SWITCHING | NO DRAMA | STAY FOCUSED</div>
+            <div class="clarity-mode">✨ CLARITY MODE: One Phase, Pure Execution ✨</div>
         </div>
 
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Days Completed</h3>
-                <div class="number" id="daysCompleted">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Current Day</h3>
-                <div class="number" id="currentDay">1</div>
-            </div>
-            <div class="stat-card">
-                <h3>Completion Rate</h3>
-                <div class="number" id="completionRate">0%</div>
-            </div>
-            <div class="stat-card">
-                <h3>Days Remaining</h3>
-                <div class="number" id="daysRemaining">45</div>
+        <div id="setupScreen" class="content setup-screen hidden">
+            <h2>🚀 Start Your Challenge</h2>
+            <div class="day-selector">
+                <h3>Select Your Challenge Duration:</h3>
+                <div class="day-buttons">
+                    <button class="day-btn" onclick="setDays(21)">
+                        <div style="font-size: 24px;">21</div>
+                        <div style="font-size: 12px;">DAYS</div>
+                    </button>
+                    <button class="day-btn" onclick="setDays(45)">
+                        <div style="font-size: 24px;">45</div>
+                        <div style="font-size: 12px;">DAYS</div>
+                    </button>
+                    <button class="day-btn" onclick="setDays(75)">
+                        <div style="font-size: 24px;">75</div>
+                        <div style="font-size: 12px;">DAYS</div>
+                    </button>
+                    <button class="day-btn" onclick="setDays(90)">
+                        <div style="font-size: 24px;">90</div>
+                        <div style="font-size: 12px;">DAYS</div>
+                    </button>
+                </div>
+                <div class="custom-days">
+                    <input type="number" id="customDays" placeholder="Or enter custom number of days (1-365)" min="1" max="365">
+                    <button class="btn" style="margin-top: 10px; width: 100%;" onclick="setCustomDays()">Start Custom Challenge</button>
+                </div>
             </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('tracker')">Daily Tracker</button>
-            <button class="tab" onclick="switchTab('rules')">Rules</button>
-            <button class="tab" onclick="switchTab('income')">Income</button>
-            <button class="tab" onclick="switchTab('history')">History</button>
-        </div>
-
-        <div class="content">
-            <div id="trackerTab">
-                <div id="daysList"></div>
+        <div id="mainContent" class="hidden">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Days Completed</h3>
+                    <div class="number" id="daysCompleted">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Current Day</h3>
+                    <div class="number" id="currentDay">1</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Completion Rate</h3>
+                    <div class="number" id="completionRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Days Remaining</h3>
+                    <div class="number" id="daysRemaining">0</div>
+                </div>
             </div>
 
-            <div id="rulesTab" class="hidden">
-                <h2 style="margin-bottom: 20px;">⚠️ NON-NEGOTIABLE RULES</h2>
-                <ul class="rules-list">
-                    <li><strong>1.</strong> NO DRAMA AT LIBRARY - You go there to code, not socialize</li>
-                    <li><strong>2.</strong> NO MERCHANT NAVY TOPIC - Not even 5 minutes of research</li>
-                    <li><strong>3.</strong> NO DIET OPTIMIZATION - Eat simple, focus on code</li>
-                    <li><strong>4.</strong> NO TECH STACK SWITCHING - HTML/CSS/JS locked for 45 days</li>
-                    <li><strong>5.</strong> USE AI FOR DEBUGGING ONLY - Don't let it build entire projects</li>
-                </ul>
-                
-                <h3 style="margin-top: 30px; margin-bottom: 15px;">✅ Daily Success Checklist</h3>
-                <ul class="rules-list">
-                    <li>□ Completed today's task in execution tracker</li>
-                    <li>□ Pushed code to GitHub</li>
-                    <li>□ 3-4 hours of focused coding (no distractions)</li>
-                    <li>□ Zero switching to other topics</li>
-                    <li>□ Updated notes in tracker</li>
-                </ul>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('tracker')">Daily Tracker</button>
+                <button class="tab" onclick="switchTab('rules')">Rules</button>
+                <button class="tab" onclick="switchTab('income')">Income</button>
+                <button class="tab" onclick="switchTab('history')">History</button>
+                <button class="tab" onclick="switchTab('settings')">Settings</button>
             </div>
 
-            <div id="incomeTab" class="hidden">
-                <h2 style="margin-bottom: 20px;">💰 Income Tracker</h2>
-                <div class="income-form">
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="incomeDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Client/Platform</label>
-                        <input type="text" id="incomeClient" placeholder="e.g., Fiverr, Local Gym" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Amount (₹)</label>
-                        <input type="number" id="incomeAmount" placeholder="1500" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Project Type</label>
-                        <input type="text" id="incomeProject" placeholder="e.g., Landing page, Restaurant website" required>
-                    </div>
-                    <button class="btn" onclick="addIncome()">Add Income Entry</button>
+            <div class="content">
+                <div id="trackerTab">
+                    <div id="daysList"></div>
                 </div>
 
-                <div class="total-income">
-                    <h3>Total Income</h3>
-                    <div class="amount">₹<span id="totalIncome">0</span></div>
+                <div id="rulesTab" class="hidden">
+                    <h2 style="margin-bottom: 20px;">⚠️ NON-NEGOTIABLE RULES</h2>
+                    <ul class="rules-list">
+                        <li><strong>1.</strong> NO DRAMA - Focus on execution, not distractions</li>
+                        <li><strong>2.</strong> NO TOPIC SWITCHING - Stay committed to your goal</li>
+                        <li><strong>3.</strong> NO OPTIMIZATION PARALYSIS - Simple actions, consistent execution</li>
+                        <li><strong>4.</strong> NO EXCUSES - Do the work every single day</li>
+                        <li><strong>5.</strong> TRACK EVERYTHING - Log your tasks and wins daily</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">✅ Daily Success Checklist</h3>
+                    <ul class="rules-list">
+                        <li>□ Set today's task in execution tracker</li>
+                        <li>□ Completed the task with full focus</li>
+                        <li>□ Minimum distraction, maximum execution</li>
+                        <li>□ Zero switching to other topics</li>
+                        <li>□ Updated notes in tracker</li>
+                    </ul>
                 </div>
 
-                <div class="income-list" id="incomeList"></div>
-            </div>
+                <div id="incomeTab" class="hidden">
+                    <h2 style="margin-bottom: 20px;">💰 Income Tracker</h2>
+                    <div class="income-form">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="incomeDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Client/Platform</label>
+                            <input type="text" id="incomeClient" placeholder="e.g., Fiverr, Local Client" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="incomeAmount" placeholder="1500" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Type</label>
+                            <input type="text" id="incomeProject" placeholder="e.g., Website, Consulting" required>
+                        </div>
+                        <button class="btn" onclick="addIncome()">Add Income Entry</button>
+                    </div>
 
-            <div id="historyTab" class="hidden">
-                <h2 style="margin-bottom: 20px;">📅 Completion History</h2>
-                <div id="historyList"></div>
+                    <div class="total-income">
+                        <h3>Total Income</h3>
+                        <div class="amount">₹<span id="totalIncome">0</span></div>
+                    </div>
+
+                    <div class="income-list" id="incomeList"></div>
+                </div>
+
+                <div id="historyTab" class="hidden">
+                    <h2 style="margin-bottom: 20px;">📅 Completion History</h2>
+                    <div id="historyList"></div>
+                </div>
+
+                <div id="settingsTab" class="hidden">
+                    <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
+                    <div style="padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Challenge Info</h3>
+                        <p><strong>Total Days:</strong> <span id="settingsTotalDays">0</span></p>
+                        <p><strong>Start Date:</strong> <span id="settingsStartDate">-</span></p>
+                        <p><strong>Expected End Date:</strong> <span id="settingsEndDate">-</span></p>
+                    </div>
+
+                    <div class="reset-section">
+                        <h3>⚠️ Danger Zone</h3>
+                        <p style="margin-bottom: 15px;">This will delete all your progress and start fresh. This action cannot be undone!</p>
+                        <button class="btn btn-danger" onclick="resetChallenge()">Reset Challenge</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Task data structure
-        const tasks = [
-            // Phase 1: Foundation Lock (Days 1-10)
-            { day: 1, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Landing page (HTML/CSS) - START NOW', hours: '3-4' },
-            { day: 2, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Landing page completion + CSS animations', hours: '3-4' },
-            { day: 3, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Gym website - Hero section + navigation', hours: '3-4' },
-            { day: 4, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Gym website - Services + Footer + Deploy', hours: '3-4' },
-            { day: 5, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Portfolio site - Structure + About section', hours: '3-4' },
-            { day: 6, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Portfolio site - Projects grid + GitHub link', hours: '3-4' },
-            { day: 7, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Diet tracker (JavaScript) - Input fields + array storage', hours: '3-4' },
-            { day: 8, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Diet tracker - Display + localStorage functionality', hours: '3-4' },
-            { day: 9, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'To-do app - Add/Delete/Mark complete features', hours: '3-4' },
-            { day: 10, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'To-do app - LocalStorage + styling polish', hours: '3-4' },
-            
-            // Phase 2: Portfolio Build (Days 11-25)
-            { day: 11, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Research 3 examples + wireframe', hours: '3-4' },
-            { day: 12, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Header + Hero section', hours: '3-4' },
-            { day: 13, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Services + About sections', hours: '3-4' },
-            { day: 14, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Contact form + Footer', hours: '3-4' },
-            { day: 15, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Mobile responsive + Deploy', hours: '3-4' },
-            { day: 16, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Menu design + image gallery', hours: '3-4' },
-            { day: 17, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Location map + hours', hours: '3-4' },
-            { day: 18, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Online reservation form', hours: '3-4' },
-            { day: 19, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Mobile + Deploy', hours: '3-4' },
-            { day: 20, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - UI design + date picker', hours: '3-4' },
-            { day: 21, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - Time slots + form validation', hours: '3-4' },
-            { day: 22, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - LocalStorage booking save', hours: '3-4' },
-            { day: 23, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - Display bookings + Delete', hours: '3-4' },
-            { day: 24, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'GitHub cleanup - READMEs for all projects', hours: '3-4' },
-            { day: 25, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Portfolio update - Add all 3 projects with links', hours: '3-4' },
-            
-            // Phase 3: Monetization Setup (Days 26-35)
-            { day: 26, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Fiverr account + 3 gig drafts', hours: '2-3' },
-            { day: 27, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Upwork profile + portfolio upload', hours: '2-3' },
-            { day: 28, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Freelancer.com profile', hours: '2-3' },
-            { day: 29, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'LinkedIn developer profile + post 1st project', hours: '2-3' },
-            { day: 30, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Instagram dev page + post portfolio screenshots', hours: '2-3' },
-            { day: 31, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Write gig descriptions - ₹1500-3000 websites', hours: '2-3' },
-            { day: 32, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'List 20 local businesses (gyms, tutors, restaurants)', hours: '2-3' },
-            { day: 33, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create DM template + send 5 test messages', hours: '2-3' },
-            { day: 34, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Improve 1 project based on feedback research', hours: '2-3' },
-            { day: 35, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Set up payment methods + pricing strategy', hours: '2-3' },
-            
-            // Phase 4: Outreach Grind (Days 36-45)
-            { day: 36, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 37, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 38, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 39, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 40, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 41, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 42, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 43, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 44, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
-            { day: 45, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' }
-        ];
-
         // Load data from localStorage
         function loadData() {
             const saved = localStorage.getItem('executionTracker');
             if (saved) {
                 return JSON.parse(saved);
             }
-            return {
-                startDate: new Date().toISOString().split('T')[0],
-                completions: {},
-                notes: {},
-                income: []
-            };
+            return null;
         }
 
         // Save data to localStorage
@@ -520,6 +581,55 @@
 
         let data = loadData();
 
+        // Initialize app
+        function initApp() {
+            if (!data || !data.totalDays) {
+                document.getElementById('setupScreen').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+            } else {
+                document.getElementById('setupScreen').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                renderTasks();
+                updateStats();
+                renderHistory();
+                updateSettingsInfo();
+            }
+        }
+
+        // Set days and initialize tracker
+        function setDays(days) {
+            initializeTracker(days);
+        }
+
+        function setCustomDays() {
+            const customDays = parseInt(document.getElementById('customDays').value);
+            if (!customDays || customDays < 1 || customDays > 365) {
+                alert('Please enter a valid number of days (1-365)');
+                return;
+            }
+            initializeTracker(customDays);
+        }
+
+        function initializeTracker(days) {
+            data = {
+                totalDays: days,
+                startDate: new Date().toISOString().split('T')[0],
+                completions: {},
+                tasks: {},
+                notes: {},
+                income: [],
+                history: []
+            };
+            
+            // Initialize empty tasks for all days
+            for (let i = 1; i <= days; i++) {
+                data.tasks[i] = '';
+            }
+            
+            saveData(data);
+            initApp();
+        }
+
         // Calculate date for each day
         function getDateForDay(day) {
             const start = new Date(data.startDate);
@@ -528,42 +638,62 @@
             return current.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         }
 
+        // Get current day based on start date
+        function getCurrentDay() {
+            const start = new Date(data.startDate);
+            const today = new Date();
+            const diffTime = today - start;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return Math.min(Math.max(diffDays, 1), data.totalDays);
+        }
+
         // Render daily tasks
         function renderTasks() {
             const container = document.getElementById('daysList');
             const currentDayNum = getCurrentDay();
             
-            container.innerHTML = tasks.map(task => {
-                const isCompleted = data.completions[task.day] || false;
-                const isCurrent = task.day === currentDayNum;
-                const note = data.notes[task.day] || '';
+            let html = '';
+            for (let day = 1; day <= data.totalDays; day++) {
+                const isCompleted = data.completions[day] || false;
+                const isCurrent = day === currentDayNum;
+                const task = data.tasks[day] || '';
+                const note = data.notes[day] || '';
                 
-                return `
+                html += `
                     <div class="day-item ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
                         <div class="day-header">
                             <div class="checkbox-container">
                                 <input type="checkbox" 
                                        class="checkbox" 
-                                       id="day${task.day}" 
+                                       id="day${day}" 
                                        ${isCompleted ? 'checked' : ''}
-                                       onchange="toggleDay(${task.day})">
+                                       onchange="toggleDay(${day})">
                             </div>
                             <div class="day-meta">
-                                <div class="day-number">Day ${task.day} ${isCurrent ? '🔥' : ''}</div>
-                                <div class="day-date">${getDateForDay(task.day)}</div>
+                                <div class="day-number">Day ${day} ${isCurrent ? '🔥' : ''}</div>
+                                <div class="day-date">${getDateForDay(day)}</div>
                             </div>
-                            <span class="phase-badge ${task.phaseClass}">${task.phase}</span>
+                            <span class="phase-badge">Clarity Mode</span>
                         </div>
-                        <div class="task">
-                            ${task.task}
-                            <span class="hours">${task.hours}hrs</span>
-                        </div>
+                        <input type="text" 
+                               class="task-input" 
+                               placeholder="Set your task for Day ${day}..."
+                               value="${task}"
+                               onblur="saveTask(${day}, this.value)">
                         <textarea class="notes-input" 
                                   placeholder="Add notes..."
-                                  onblur="saveNote(${task.day}, this.value)">${note}</textarea>
+                                  onblur="saveNote(${day}, this.value)">${note}</textarea>
                     </div>
                 `;
-            }).join('');
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Save task
+        function saveTask(day, task) {
+            data.tasks[day] = task;
+            saveData(data);
         }
 
         // Toggle day completion
@@ -576,7 +706,7 @@
                 const historyEntry = {
                     day: day,
                     date: new Date().toISOString(),
-                    task: tasks.find(t => t.day === day).task
+                    task: data.tasks[day] || 'Task completed'
                 };
                 
                 if (!data.history) data.history = [];
@@ -600,20 +730,11 @@
             saveData(data);
         }
 
-        // Get current day based on start date
-        function getCurrentDay() {
-            const start = new Date(data.startDate);
-            const today = new Date();
-            const diffTime = today - start;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            return Math.min(Math.max(diffDays, 1), 45);
-        }
-
         // Update statistics
         function updateStats() {
             const completed = Object.values(data.completions).filter(v => v).length;
             const currentDay = getCurrentDay();
-            const remaining = 45 - currentDay + 1;
+            const remaining = data.totalDays - currentDay + 1;
             const rate = currentDay > 0 ? Math.round((completed / currentDay) * 100) : 0;
             
             document.getElementById('daysCompleted').textContent = completed;
@@ -633,9 +754,11 @@
             document.getElementById('rulesTab').classList.toggle('hidden', tab !== 'rules');
             document.getElementById('incomeTab').classList.toggle('hidden', tab !== 'income');
             document.getElementById('historyTab').classList.toggle('hidden', tab !== 'history');
+            document.getElementById('settingsTab').classList.toggle('hidden', tab !== 'settings');
             
             if (tab === 'income') renderIncome();
             if (tab === 'history') renderHistory();
+            if (tab === 'settings') updateSettingsInfo();
         }
 
         // Add income
@@ -709,13 +832,46 @@
                 .join('');
         }
 
-        // Initialize
-        renderTasks();
-        updateStats();
-        renderHistory();
+        // Update settings info
+        function updateSettingsInfo() {
+            if (!data) return;
+            
+            document.getElementById('settingsTotalDays').textContent = data.totalDays;
+            
+            const startDate = new Date(data.startDate);
+            document.getElementById('settingsStartDate').textContent = startDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + data.totalDays - 1);
+            document.getElementById('settingsEndDate').textContent = endDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        // Reset challenge
+        function resetChallenge() {
+            if (confirm('Are you sure you want to reset your challenge? This will delete ALL your progress and cannot be undone!')) {
+                if (confirm('Really sure? This is your last chance to back out!')) {
+                    localStorage.removeItem('executionTracker');
+                    data = null;
+                    location.reload();
+                }
+            }
+        }
+
+        // Initialize app on load
+        initApp();
 
         // Set today's date in income form
-        document.getElementById('incomeDate').valueAsDate = new Date();
+        if (data) {
+            document.getElementById('incomeDate').valueAsDate = new Date();
+        }
 
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
