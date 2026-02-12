@@ -242,18 +242,83 @@
             color: white;
         }
 
+        .tasks-container {
+            margin-top: 10px;
+        }
+
+        .task-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
         .task-input {
-            width: 100%;
+            flex: 1;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
-            margin-top: 10px;
             font-family: inherit;
         }
 
         .task-input:disabled {
             background: #f9f9f9;
+            cursor: not-allowed;
+        }
+
+        .add-task-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .add-task-label {
+            font-weight: 600;
+            color: #1F4788;
+            font-size: 14px;
+        }
+
+        .btn-add-task {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-add-task:hover {
+            background: #45a049;
+        }
+
+        .btn-add-task:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-remove-task {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-task:hover {
+            background: #da190b;
+        }
+
+        .btn-remove-task:disabled {
+            background: #ccc;
             cursor: not-allowed;
         }
 
@@ -428,7 +493,7 @@
 
         <div class="header">
             <h1>🎯 EXECUTION TRACKER </h1>
-                   </div>
+        </div>
 
         <div id="setupScreen" class="content setup-screen hidden">
             <h2>🚀 Start Your Challenge</h2>
@@ -565,15 +630,15 @@
                 totalDays: days,
                 startDate: new Date().toISOString().split('T')[0],
                 completions: {},
-                tasks: {},
+                tasks: {}, // Now stores arrays of tasks
                 notes: {},
                 income: [],
                 history: []
             };
             
-            // Initialize empty tasks for all days
+            // Initialize empty task arrays for all days
             for (let i = 1; i <= days; i++) {
-                data.tasks[i] = '';
+                data.tasks[i] = [''];
             }
             
             saveData(data);
@@ -606,8 +671,30 @@
             for (let day = 1; day <= data.totalDays; day++) {
                 const isCompleted = data.completions[day] || false;
                 const isCurrent = day === currentDayNum;
-                const task = data.tasks[day] || '';
+                const tasks = data.tasks[day] || [''];
                 const note = data.notes[day] || '';
+                
+                // Generate task rows HTML
+                let tasksHtml = '';
+                tasks.forEach((task, index) => {
+                    tasksHtml += `
+                        <div class="task-row">
+                            <input type="text" 
+                                   class="task-input" 
+                                   id="task-${day}-${index}"
+                                   placeholder="Task ${index + 1}..."
+                                   value="${task}"
+                                   disabled>
+                            ${tasks.length > 1 ? `
+                            <button class="btn-remove-task" 
+                                    id="remove-${day}-${index}"
+                                    onclick="removeTask(${day}, ${index})"
+                                    style="display: none;"
+                                    disabled>✖️</button>
+                            ` : ''}
+                        </div>
+                    `;
+                });
                 
                 html += `
                     <div class="day-item ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
@@ -625,12 +712,19 @@
                             </div>
                             <span class="phase-badge">Pinpoint Mode</span>
                         </div>
-                        <input type="text" 
-                               class="task-input" 
-                               id="task-${day}"
-                               placeholder="Set your task for Day ${day}..."
-                               value="${task}"
-                               disabled>
+                        <div class="tasks-container">
+                            <div class="add-task-header">
+                                <span class="add-task-label">Tasks</span>
+                                <button class="btn-add-task" 
+                                        id="add-task-${day}"
+                                        onclick="addTask(${day})"
+                                        style="display: none;"
+                                        disabled>+ Add Task</button>
+                            </div>
+                            <div id="tasks-list-${day}">
+                                ${tasksHtml}
+                            </div>
+                        </div>
                         <textarea class="notes-input" 
                                   id="notes-${day}"
                                   placeholder="Add notes..."
@@ -647,6 +741,72 @@
             container.innerHTML = html;
         }
 
+        // Add task to a specific day
+        function addTask(day) {
+            if (!data.tasks[day]) {
+                data.tasks[day] = [];
+            }
+            data.tasks[day].push('');
+            
+            // Re-render just this day's tasks
+            const tasksListContainer = document.getElementById(`tasks-list-${day}`);
+            const tasks = data.tasks[day];
+            
+            let tasksHtml = '';
+            tasks.forEach((task, index) => {
+                tasksHtml += `
+                    <div class="task-row">
+                        <input type="text" 
+                               class="task-input" 
+                               id="task-${day}-${index}"
+                               placeholder="Task ${index + 1}..."
+                               value="${task}">
+                        ${tasks.length > 1 ? `
+                        <button class="btn-remove-task" 
+                                id="remove-${day}-${index}"
+                                onclick="removeTask(${day}, ${index})">✖️</button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            tasksListContainer.innerHTML = tasksHtml;
+            
+            // Focus on the new task input
+            document.getElementById(`task-${day}-${tasks.length - 1}`).focus();
+        }
+
+        // Remove task from a specific day
+        function removeTask(day, taskIndex) {
+            if (data.tasks[day] && data.tasks[day].length > 1) {
+                data.tasks[day].splice(taskIndex, 1);
+                
+                // Re-render just this day's tasks
+                const tasksListContainer = document.getElementById(`tasks-list-${day}`);
+                const tasks = data.tasks[day];
+                
+                let tasksHtml = '';
+                tasks.forEach((task, index) => {
+                    tasksHtml += `
+                        <div class="task-row">
+                            <input type="text" 
+                                   class="task-input" 
+                                   id="task-${day}-${index}"
+                                   placeholder="Task ${index + 1}..."
+                                   value="${task}">
+                            ${tasks.length > 1 ? `
+                            <button class="btn-remove-task" 
+                                    id="remove-${day}-${index}"
+                                    onclick="removeTask(${day}, ${index})">✖️</button>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                tasksListContainer.innerHTML = tasksHtml;
+            }
+        }
+
         // Toggle day completion
         function toggleDay(day) {
             const wasCompleted = data.completions[day] || false;
@@ -654,10 +814,13 @@
             
             // Add to history
             if (data.completions[day]) {
+                const tasks = data.tasks[day] || [''];
+                const taskText = tasks.filter(t => t.trim()).join(', ') || 'Task completed';
+                
                 const historyEntry = {
                     day: day,
                     date: new Date().toISOString(),
-                    task: data.tasks[day] || 'Task completed'
+                    task: taskText
                 };
                 
                 if (!data.history) data.history = [];
@@ -675,53 +838,82 @@
             renderHistory();
         }
 
-        // Save note
-        function saveNote(day, note) {
-            data.notes[day] = note;
-            saveData(data);
-        }
-
         // Edit day - enable inputs and show save/cancel buttons
         function editDay(day) {
-            const taskInput = document.getElementById(`task-${day}`);
             const notesInput = document.getElementById(`notes-${day}`);
             const editBtn = document.getElementById(`edit-btn-${day}`);
             const saveBtn = document.getElementById(`save-btn-${day}`);
             const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            const addTaskBtn = document.getElementById(`add-task-${day}`);
             
             // Store original values for cancel
-            taskInput.dataset.originalValue = taskInput.value;
+            const tasks = data.tasks[day] || [''];
+            window[`originalTasks_${day}`] = JSON.parse(JSON.stringify(tasks));
             notesInput.dataset.originalValue = notesInput.value;
             
-            // Enable inputs
-            taskInput.disabled = false;
+            // Enable all task inputs
+            tasks.forEach((task, index) => {
+                const taskInput = document.getElementById(`task-${day}-${index}`);
+                if (taskInput) {
+                    taskInput.disabled = false;
+                }
+                const removeBtn = document.getElementById(`remove-${day}-${index}`);
+                if (removeBtn) {
+                    removeBtn.style.display = 'inline-block';
+                    removeBtn.disabled = false;
+                }
+            });
+            
+            // Enable notes input
             notesInput.disabled = false;
+            
+            // Show add task button
+            if (addTaskBtn) {
+                addTaskBtn.style.display = 'inline-block';
+                addTaskBtn.disabled = false;
+            }
             
             // Toggle buttons
             editBtn.style.display = 'none';
             saveBtn.style.display = 'inline-block';
             cancelBtn.style.display = 'inline-block';
-            
-            // Focus on task input
-            taskInput.focus();
         }
 
         // Save day - save changes and disable inputs
         function saveDay(day) {
-            const taskInput = document.getElementById(`task-${day}`);
             const notesInput = document.getElementById(`notes-${day}`);
             const editBtn = document.getElementById(`edit-btn-${day}`);
             const saveBtn = document.getElementById(`save-btn-${day}`);
             const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            const addTaskBtn = document.getElementById(`add-task-${day}`);
             
-            // Save the values
-            data.tasks[day] = taskInput.value;
+            // Save all task values
+            const tasks = data.tasks[day] || [];
+            tasks.forEach((task, index) => {
+                const taskInput = document.getElementById(`task-${day}-${index}`);
+                if (taskInput) {
+                    data.tasks[day][index] = taskInput.value;
+                    taskInput.disabled = true;
+                }
+                const removeBtn = document.getElementById(`remove-${day}-${index}`);
+                if (removeBtn) {
+                    removeBtn.style.display = 'none';
+                    removeBtn.disabled = true;
+                }
+            });
+            
+            // Save notes
             data.notes[day] = notesInput.value;
             saveData(data);
             
-            // Disable inputs
-            taskInput.disabled = true;
+            // Disable notes input
             notesInput.disabled = true;
+            
+            // Hide add task button
+            if (addTaskBtn) {
+                addTaskBtn.style.display = 'none';
+                addTaskBtn.disabled = true;
+            }
             
             // Toggle buttons
             editBtn.style.display = 'inline-block';
@@ -732,7 +924,8 @@
             if (data.completions[day] && data.history) {
                 const historyEntry = data.history.find(h => h.day === day);
                 if (historyEntry) {
-                    historyEntry.task = data.tasks[day] || 'Task completed';
+                    const taskText = data.tasks[day].filter(t => t.trim()).join(', ') || 'Task completed';
+                    historyEntry.task = taskText;
                     saveData(data);
                     renderHistory();
                 }
@@ -741,19 +934,52 @@
 
         // Cancel edit - restore original values and disable inputs
         function cancelEdit(day) {
-            const taskInput = document.getElementById(`task-${day}`);
             const notesInput = document.getElementById(`notes-${day}`);
             const editBtn = document.getElementById(`edit-btn-${day}`);
             const saveBtn = document.getElementById(`save-btn-${day}`);
             const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            const addTaskBtn = document.getElementById(`add-task-${day}`);
             
-            // Restore original values
-            taskInput.value = taskInput.dataset.originalValue || '';
+            // Restore original task values
+            const originalTasks = window[`originalTasks_${day}`] || [''];
+            data.tasks[day] = JSON.parse(JSON.stringify(originalTasks));
+            
+            // Re-render the tasks for this day
+            const tasksListContainer = document.getElementById(`tasks-list-${day}`);
+            const tasks = data.tasks[day];
+            
+            let tasksHtml = '';
+            tasks.forEach((task, index) => {
+                tasksHtml += `
+                    <div class="task-row">
+                        <input type="text" 
+                               class="task-input" 
+                               id="task-${day}-${index}"
+                               placeholder="Task ${index + 1}..."
+                               value="${task}"
+                               disabled>
+                        ${tasks.length > 1 ? `
+                        <button class="btn-remove-task" 
+                                id="remove-${day}-${index}"
+                                onclick="removeTask(${day}, ${index})"
+                                style="display: none;"
+                                disabled>✖️</button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            tasksListContainer.innerHTML = tasksHtml;
+            
+            // Restore notes
             notesInput.value = notesInput.dataset.originalValue || '';
-            
-            // Disable inputs
-            taskInput.disabled = true;
             notesInput.disabled = true;
+            
+            // Hide add task button
+            if (addTaskBtn) {
+                addTaskBtn.style.display = 'none';
+                addTaskBtn.disabled = true;
+            }
             
             // Toggle buttons
             editBtn.style.display = 'inline-block';
@@ -766,7 +992,10 @@
             const completed = Object.values(data.completions).filter(v => v).length;
             const currentDay = getCurrentDay();
             const remaining = data.totalDays - currentDay + 1;
-            const rate = currentDay > 0 ? Math.round((completed / currentDay) * 100) : 0;
+            
+            // Calculate success rate based on total days (completed / total days)
+            // Show one decimal place for accuracy
+            const rate = data.totalDays > 0 ? ((completed / data.totalDays) * 100).toFixed(1) : '0.0';
             
             document.getElementById('daysCompleted').textContent = completed;
             document.getElementById('currentDay').textContent = currentDay;
@@ -802,6 +1031,16 @@
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(entry => {
                     const completedDate = new Date(entry.date);
+                    
+                    // Get tasks for this day and format them with numbering
+                    const dayTasks = data.tasks[entry.day] || [];
+                    const tasksHtml = dayTasks
+                        .filter(task => task.trim())
+                        .map((task, index) => `<div style="margin-left: 20px;">${index + 1}. ${task}</div>`)
+                        .join('');
+                    
+                    const displayTasks = tasksHtml || '<div style="margin-left: 20px;">Task completed</div>';
+                    
                     return `
                         <div class="history-item">
                             <div class="history-date">
@@ -811,7 +1050,7 @@
                                     year: 'numeric' 
                                 })}
                             </div>
-                            <div>${entry.task}</div>
+                            ${displayTasks}
                         </div>
                     `;
                 })
