@@ -1,6 +1,6 @@
 {
   "name": "45-Day Execution Tracker - Web Dev Mastery",
-  "short_name": "45-Day Tracker",
+  "short_name": "Day Tracker",
   "description": "Track your 45-day web development journey with daily tasks, income tracking, and progress history",
   "start_url": "./index.html",
   "display": "standalone",
