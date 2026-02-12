@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,51 +122,56 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-card {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             text-align: center;
         }
 
         .stat-card h3 {
             color: #666;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 11px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-card .number {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             color: #1F4788;
         }
 
         .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
         }
 
         .tab {
             background: white;
-            border: none;
-            padding: 12px 24px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 8px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 13px;
             transition: all 0.3s;
+            text-align: center;
         }
 
         .tab.active {
             background: #1F4788;
             color: white;
+            border-color: #1F4788;
         }
 
         .content {
@@ -248,6 +252,11 @@
             font-family: inherit;
         }
 
+        .task-input:disabled {
+            background: #f9f9f9;
+            cursor: not-allowed;
+        }
+
         .notes-input {
             width: 100%;
             margin-top: 10px;
@@ -259,43 +268,71 @@
             min-height: 60px;
         }
 
-        .rules-list {
-            list-style: none;
+        .notes-input:disabled {
+            background: #f9f9f9;
+            cursor: not-allowed;
         }
 
-        .rules-list li {
-            padding: 12px;
-            margin: 8px 0;
-            border-left: 4px solid #C00000;
-            background: #FFF3CD;
-            border-radius: 4px;
-        }
-
-        .income-form {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 8px;
-        }
-
-        .form-group {
+        .edit-controls {
             display: flex;
-            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: flex-end;
         }
 
-        .form-group label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input {
-            padding: 10px;
-            border: 1px solid #ddd;
+        .btn-small {
+            padding: 6px 16px;
+            font-size: 13px;
+            border: none;
             border-radius: 4px;
-            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1976D2;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #45a049;
+        }
+
+        .btn-cancel {
+            background: #9E9E9E;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #757575;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .history-item {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .history-date {
+            font-weight: bold;
+            color: #1F4788;
+            margin-bottom: 5px;
         }
 
         .btn {
@@ -319,63 +356,6 @@
 
         .btn-danger:hover {
             background: #da190b;
-        }
-
-        .income-list {
-            margin-top: 20px;
-        }
-
-        .income-item {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .income-amount {
-            font-size: 20px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .total-income {
-            background: #1F4788;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .total-income h3 {
-            margin-bottom: 10px;
-        }
-
-        .total-income .amount {
-            font-size: 36px;
-            font-weight: bold;
-        }
-
-        .history-item {
-            background: #f9f9f9;
-            border-left: 4px solid #4CAF50;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-        }
-
-        .history-date {
-            font-weight: bold;
-            color: #1F4788;
-            margin-bottom: 5px;
-        }
-
-        .hidden {
-            display: none;
         }
 
         .setup-screen {
@@ -407,11 +387,34 @@
             }
             
             .header h1 {
-                font-size: 20px;
+                font-size: 18px;
             }
             
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 12px 8px;
+            }
+
+            .stat-card h3 {
+                font-size: 10px;
+            }
+
+            .stat-card .number {
+                font-size: 20px;
+            }
+
             .tabs {
-                flex-direction: column;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .tab {
+                padding: 10px 6px;
+                font-size: 12px;
             }
 
             .day-buttons {
@@ -425,8 +428,7 @@
 
         <div class="header">
             <h1>🎯 EXECUTION TRACKER </h1>
-    
-        </div>
+                   </div>
 
         <div id="setupScreen" class="content setup-screen hidden">
             <h2>🚀 Start Your Challenge</h2>
@@ -460,82 +462,32 @@
         <div id="mainContent" class="hidden">
             <div class="stats">
                 <div class="stat-card">
-                    <h3>Days Completed</h3>
+                    <h3>Completed</h3>
                     <div class="number" id="daysCompleted">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Current Day</h3>
+                    <h3>Current</h3>
                     <div class="number" id="currentDay">1</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Completion Rate</h3>
-                    <div class="number" id="completionRate">0%</div>
+                    <h3>Remaining</h3>
+                    <div class="number" id="daysRemaining">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>Days Remaining</h3>
-                    <div class="number" id="daysRemaining">0</div>
+                    <h3>Success Rate</h3>
+                    <div class="number" id="completionRate">0%</div>
                 </div>
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('tracker')">Daily Tracker</button>
-                    <button class="tab" onclick="switchTab('history')">History</button>
-                <button class="tab" onclick="switchTab('settings')">Settings</button>
+                <button class="tab active" onclick="switchTab('tracker')">📋 Tracker</button>
+                <button class="tab" onclick="switchTab('history')">📅 History</button>
+                <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
             </div>
 
             <div class="content">
                 <div id="trackerTab">
                     <div id="daysList"></div>
-                </div>
-
-                <div id="rulesTab" class="hidden">
-                    <h2 style="margin-bottom: 20px;">⚠️ NON-NEGOTIABLE RULES</h2>
-                    <ul class="rules-list">
-                        <li><strong>1.</strong> NO DRAMA - Focus on execution, not distractions</li>
-                        <li><strong>2.</strong> NO TOPIC SWITCHING - Stay committed to your goal</li>
-                        <li><strong>3.</strong> NO OPTIMIZATION PARALYSIS - Simple actions, consistent execution</li>
-                        <li><strong>4.</strong> NO EXCUSES - Do the work every single day</li>
-                        <li><strong>5.</strong> TRACK EVERYTHING - Log your tasks and wins daily</li>
-                    </ul>
-                    
-                    <h3 style="margin-top: 30px; margin-bottom: 15px;">✅ Daily Success Checklist</h3>
-                    <ul class="rules-list">
-                        <li>□ Set today's task in execution tracker</li>
-                        <li>□ Completed the task with full focus</li>
-                        <li>□ Minimum distraction, maximum execution</li>
-                        <li>□ Zero switching to other topics</li>
-                        <li>□ Updated notes in tracker</li>
-                    </ul>
-                </div>
-
-                <div id="incomeTab" class="hidden">
-                    <h2 style="margin-bottom: 20px;">💰 Income Tracker</h2>
-                    <div class="income-form">
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" id="incomeDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Client/Platform</label>
-                            <input type="text" id="incomeClient" placeholder="e.g., Fiverr, Local Client" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Amount (₹)</label>
-                            <input type="number" id="incomeAmount" placeholder="1500" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Project Type</label>
-                            <input type="text" id="incomeProject" placeholder="e.g., Website, Consulting" required>
-                        </div>
-                        <button class="btn" onclick="addIncome()">Add Income Entry</button>
-                    </div>
-
-                    <div class="total-income">
-                        <h3>Total Income</h3>
-                        <div class="amount">₹<span id="totalIncome">0</span></div>
-                    </div>
-
-                    <div class="income-list" id="incomeList"></div>
                 </div>
 
                 <div id="historyTab" class="hidden">
@@ -671,27 +623,28 @@
                                 <div class="day-number">Day ${day} ${isCurrent ? '🔥' : ''}</div>
                                 <div class="day-date">${getDateForDay(day)}</div>
                             </div>
-                            <span class="phase-badge">Clarity Mode</span>
+                            <span class="phase-badge">Pinpoint Mode</span>
                         </div>
                         <input type="text" 
                                class="task-input" 
+                               id="task-${day}"
                                placeholder="Set your task for Day ${day}..."
                                value="${task}"
-                               onblur="saveTask(${day}, this.value)">
+                               disabled>
                         <textarea class="notes-input" 
+                                  id="notes-${day}"
                                   placeholder="Add notes..."
-                                  onblur="saveNote(${day}, this.value)">${note}</textarea>
+                                  disabled>${note}</textarea>
+                        <div class="edit-controls">
+                            <button class="btn-small btn-edit" id="edit-btn-${day}" onclick="editDay(${day})">✏️ Edit</button>
+                            <button class="btn-small btn-save" id="save-btn-${day}" onclick="saveDay(${day})" style="display: none;">💾 Save</button>
+                            <button class="btn-small btn-cancel" id="cancel-btn-${day}" onclick="cancelEdit(${day})" style="display: none;">✖️ Cancel</button>
+                        </div>
                     </div>
                 `;
             }
             
             container.innerHTML = html;
-        }
-
-        // Save task
-        function saveTask(day, task) {
-            data.tasks[day] = task;
-            saveData(data);
         }
 
         // Toggle day completion
@@ -728,6 +681,86 @@
             saveData(data);
         }
 
+        // Edit day - enable inputs and show save/cancel buttons
+        function editDay(day) {
+            const taskInput = document.getElementById(`task-${day}`);
+            const notesInput = document.getElementById(`notes-${day}`);
+            const editBtn = document.getElementById(`edit-btn-${day}`);
+            const saveBtn = document.getElementById(`save-btn-${day}`);
+            const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            
+            // Store original values for cancel
+            taskInput.dataset.originalValue = taskInput.value;
+            notesInput.dataset.originalValue = notesInput.value;
+            
+            // Enable inputs
+            taskInput.disabled = false;
+            notesInput.disabled = false;
+            
+            // Toggle buttons
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-block';
+            cancelBtn.style.display = 'inline-block';
+            
+            // Focus on task input
+            taskInput.focus();
+        }
+
+        // Save day - save changes and disable inputs
+        function saveDay(day) {
+            const taskInput = document.getElementById(`task-${day}`);
+            const notesInput = document.getElementById(`notes-${day}`);
+            const editBtn = document.getElementById(`edit-btn-${day}`);
+            const saveBtn = document.getElementById(`save-btn-${day}`);
+            const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            
+            // Save the values
+            data.tasks[day] = taskInput.value;
+            data.notes[day] = notesInput.value;
+            saveData(data);
+            
+            // Disable inputs
+            taskInput.disabled = true;
+            notesInput.disabled = true;
+            
+            // Toggle buttons
+            editBtn.style.display = 'inline-block';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            
+            // Update history if this day was already completed
+            if (data.completions[day] && data.history) {
+                const historyEntry = data.history.find(h => h.day === day);
+                if (historyEntry) {
+                    historyEntry.task = data.tasks[day] || 'Task completed';
+                    saveData(data);
+                    renderHistory();
+                }
+            }
+        }
+
+        // Cancel edit - restore original values and disable inputs
+        function cancelEdit(day) {
+            const taskInput = document.getElementById(`task-${day}`);
+            const notesInput = document.getElementById(`notes-${day}`);
+            const editBtn = document.getElementById(`edit-btn-${day}`);
+            const saveBtn = document.getElementById(`save-btn-${day}`);
+            const cancelBtn = document.getElementById(`cancel-btn-${day}`);
+            
+            // Restore original values
+            taskInput.value = taskInput.dataset.originalValue || '';
+            notesInput.value = notesInput.dataset.originalValue || '';
+            
+            // Disable inputs
+            taskInput.disabled = true;
+            notesInput.disabled = true;
+            
+            // Toggle buttons
+            editBtn.style.display = 'inline-block';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+
         // Update statistics
         function updateStats() {
             const completed = Object.values(data.completions).filter(v => v).length;
@@ -749,56 +782,11 @@
             
             // Show/hide content
             document.getElementById('trackerTab').classList.toggle('hidden', tab !== 'tracker');
-            document.getElementById('rulesTab').classList.toggle('hidden', tab !== 'rules');
-            document.getElementById('incomeTab').classList.toggle('hidden', tab !== 'income');
             document.getElementById('historyTab').classList.toggle('hidden', tab !== 'history');
             document.getElementById('settingsTab').classList.toggle('hidden', tab !== 'settings');
             
-            if (tab === 'income') renderIncome();
             if (tab === 'history') renderHistory();
             if (tab === 'settings') updateSettingsInfo();
-        }
-
-        // Add income
-        function addIncome() {
-            const date = document.getElementById('incomeDate').value;
-            const client = document.getElementById('incomeClient').value;
-            const amount = parseFloat(document.getElementById('incomeAmount').value);
-            const project = document.getElementById('incomeProject').value;
-            
-            if (!date || !client || !amount || !project) {
-                alert('Please fill all fields');
-                return;
-            }
-            
-            data.income.push({ date, client, amount, project });
-            saveData(data);
-            
-            // Clear form
-            document.getElementById('incomeDate').value = '';
-            document.getElementById('incomeClient').value = '';
-            document.getElementById('incomeAmount').value = '';
-            document.getElementById('incomeProject').value = '';
-            
-            renderIncome();
-        }
-
-        // Render income list
-        function renderIncome() {
-            const list = document.getElementById('incomeList');
-            const total = data.income.reduce((sum, item) => sum + item.amount, 0);
-            
-            document.getElementById('totalIncome').textContent = total.toLocaleString('en-IN');
-            
-            list.innerHTML = data.income.map((item, index) => `
-                <div class="income-item">
-                    <div>
-                        <strong>${item.client}</strong> - ${item.project}<br>
-                        <small>${new Date(item.date).toLocaleDateString('en-GB')}</small>
-                    </div>
-                    <div class="income-amount">₹${item.amount.toLocaleString('en-IN')}</div>
-                </div>
-            `).reverse().join('');
         }
 
         // Render history
@@ -865,11 +853,6 @@
 
         // Initialize app on load
         initApp();
-
-        // Set today's date in income form
-        if (data) {
-            document.getElementById('incomeDate').valueAsDate = new Date();
-        }
 
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
