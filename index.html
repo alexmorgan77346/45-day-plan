@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45-Day Execution Tracker</title>
+    <meta name="description" content="Track your 45-day web development journey with daily tasks, income tracking, and progress history">
+    <meta name="theme-color" content="#1F4788">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #1F4788;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .warning {
+            background: #FFF3CD;
+            border-left: 4px solid #C00000;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #C00000;
+        }
+
+        .stack-locked {
+            background: #D9E1F2;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1F4788;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #1F4788;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .day-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .day-item.completed {
+            background: #C6EFCE;
+            border-color: #4CAF50;
+        }
+
+        .day-item.current {
+            border-color: #FFC000;
+            background: #FFF9E6;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container {
+            position: relative;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #4CAF50;
+        }
+
+        .day-meta {
+            flex: 1;
+        }
+
+        .day-number {
+            font-weight: bold;
+            color: #1F4788;
+            font-size: 18px;
+        }
+
+        .day-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .phase-foundation { background: #E2EFDA; color: #2D5016; }
+        .phase-portfolio { background: #FCE4D6; color: #833C0C; }
+        .phase-monetization { background: #FFF2CC; color: #7F6000; }
+        .phase-outreach { background: #F4B084; color: #833C0C; }
+
+        .task {
+            font-size: 16px;
+            margin: 10px 0;
+            padding-left: 39px;
+        }
+
+        .hours {
+            display: inline-block;
+            background: #1F4788;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .notes-input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .rules-list {
+            list-style: none;
+        }
+
+        .rules-list li {
+            padding: 12px;
+            margin: 8px 0;
+            border-left: 4px solid #C00000;
+            background: #FFF3CD;
+            border-radius: 4px;
+        }
+
+        .income-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .income-list {
+            margin-top: 20px;
+        }
+
+        .income-item {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .income-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .total-income {
+            background: #1F4788;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .total-income h3 {
+            margin-bottom: 10px;
+        }
+
+        .total-income .amount {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .history-item {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .history-date {
+            font-weight: bold;
+            color: #1F4788;
+            margin-bottom: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .install-prompt {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .install-btn {
+            background: white;
+            color: #4CAF50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+
+            .task {
+                padding-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="installPrompt" class="install-prompt hidden">
+            <div>
+                <strong>📱 Install this app!</strong><br>
+                Use it offline and track your progress anywhere
+            </div>
+            <button class="install-btn" onclick="installApp()">Install</button>
+        </div>
+
+        <div class="header">
+            <h1>🎯 45-DAY WEB DEVELOPMENT EXECUTION TRACKER</h1>
+            <div class="warning">⚠️ NO SWITCHING | NO DRAMA | NO MERCHANT NAVY RESEARCH</div>
+            <div class="stack-locked">STACK LOCKED: HTML + CSS + JavaScript + GitHub + Deploy</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Days Completed</h3>
+                <div class="number" id="daysCompleted">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Current Day</h3>
+                <div class="number" id="currentDay">1</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completion Rate</h3>
+                <div class="number" id="completionRate">0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Days Remaining</h3>
+                <div class="number" id="daysRemaining">45</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('tracker')">Daily Tracker</button>
+            <button class="tab" onclick="switchTab('rules')">Rules</button>
+            <button class="tab" onclick="switchTab('income')">Income</button>
+            <button class="tab" onclick="switchTab('history')">History</button>
+        </div>
+
+        <div class="content">
+            <div id="trackerTab">
+                <div id="daysList"></div>
+            </div>
+
+            <div id="rulesTab" class="hidden">
+                <h2 style="margin-bottom: 20px;">⚠️ NON-NEGOTIABLE RULES</h2>
+                <ul class="rules-list">
+                    <li><strong>1.</strong> NO DRAMA AT LIBRARY - You go there to code, not socialize</li>
+                    <li><strong>2.</strong> NO MERCHANT NAVY TOPIC - Not even 5 minutes of research</li>
+                    <li><strong>3.</strong> NO DIET OPTIMIZATION - Eat simple, focus on code</li>
+                    <li><strong>4.</strong> NO TECH STACK SWITCHING - HTML/CSS/JS locked for 45 days</li>
+                    <li><strong>5.</strong> USE AI FOR DEBUGGING ONLY - Don't let it build entire projects</li>
+                </ul>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">✅ Daily Success Checklist</h3>
+                <ul class="rules-list">
+                    <li>□ Completed today's task in execution tracker</li>
+                    <li>□ Pushed code to GitHub</li>
+                    <li>□ 3-4 hours of focused coding (no distractions)</li>
+                    <li>□ Zero switching to other topics</li>
+                    <li>□ Updated notes in tracker</li>
+                </ul>
+            </div>
+
+            <div id="incomeTab" class="hidden">
+                <h2 style="margin-bottom: 20px;">💰 Income Tracker</h2>
+                <div class="income-form">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="incomeDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Client/Platform</label>
+                        <input type="text" id="incomeClient" placeholder="e.g., Fiverr, Local Gym" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" id="incomeAmount" placeholder="1500" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Type</label>
+                        <input type="text" id="incomeProject" placeholder="e.g., Landing page, Restaurant website" required>
+                    </div>
+                    <button class="btn" onclick="addIncome()">Add Income Entry</button>
+                </div>
+
+                <div class="total-income">
+                    <h3>Total Income</h3>
+                    <div class="amount">₹<span id="totalIncome">0</span></div>
+                </div>
+
+                <div class="income-list" id="incomeList"></div>
+            </div>
+
+            <div id="historyTab" class="hidden">
+                <h2 style="margin-bottom: 20px;">📅 Completion History</h2>
+                <div id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task data structure
+        const tasks = [
+            // Phase 1: Foundation Lock (Days 1-10)
+            { day: 1, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Landing page (HTML/CSS) - START NOW', hours: '3-4' },
+            { day: 2, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Landing page completion + CSS animations', hours: '3-4' },
+            { day: 3, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Gym website - Hero section + navigation', hours: '3-4' },
+            { day: 4, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Gym website - Services + Footer + Deploy', hours: '3-4' },
+            { day: 5, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Portfolio site - Structure + About section', hours: '3-4' },
+            { day: 6, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Portfolio site - Projects grid + GitHub link', hours: '3-4' },
+            { day: 7, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Diet tracker (JavaScript) - Input fields + array storage', hours: '3-4' },
+            { day: 8, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'Diet tracker - Display + localStorage functionality', hours: '3-4' },
+            { day: 9, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'To-do app - Add/Delete/Mark complete features', hours: '3-4' },
+            { day: 10, phase: 'Foundation Lock', phaseClass: 'phase-foundation', task: 'To-do app - LocalStorage + styling polish', hours: '3-4' },
+            
+            // Phase 2: Portfolio Build (Days 11-25)
+            { day: 11, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Research 3 examples + wireframe', hours: '3-4' },
+            { day: 12, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Header + Hero section', hours: '3-4' },
+            { day: 13, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Services + About sections', hours: '3-4' },
+            { day: 14, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Contact form + Footer', hours: '3-4' },
+            { day: 15, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Business template - Mobile responsive + Deploy', hours: '3-4' },
+            { day: 16, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Menu design + image gallery', hours: '3-4' },
+            { day: 17, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Location map + hours', hours: '3-4' },
+            { day: 18, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Online reservation form', hours: '3-4' },
+            { day: 19, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Restaurant website - Mobile + Deploy', hours: '3-4' },
+            { day: 20, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - UI design + date picker', hours: '3-4' },
+            { day: 21, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - Time slots + form validation', hours: '3-4' },
+            { day: 22, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - LocalStorage booking save', hours: '3-4' },
+            { day: 23, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Appointment booking - Display bookings + Delete', hours: '3-4' },
+            { day: 24, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'GitHub cleanup - READMEs for all projects', hours: '3-4' },
+            { day: 25, phase: 'Portfolio Build', phaseClass: 'phase-portfolio', task: 'Portfolio update - Add all 3 projects with links', hours: '3-4' },
+            
+            // Phase 3: Monetization Setup (Days 26-35)
+            { day: 26, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Fiverr account + 3 gig drafts', hours: '2-3' },
+            { day: 27, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Upwork profile + portfolio upload', hours: '2-3' },
+            { day: 28, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create Freelancer.com profile', hours: '2-3' },
+            { day: 29, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'LinkedIn developer profile + post 1st project', hours: '2-3' },
+            { day: 30, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Instagram dev page + post portfolio screenshots', hours: '2-3' },
+            { day: 31, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Write gig descriptions - ₹1500-3000 websites', hours: '2-3' },
+            { day: 32, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'List 20 local businesses (gyms, tutors, restaurants)', hours: '2-3' },
+            { day: 33, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Create DM template + send 5 test messages', hours: '2-3' },
+            { day: 34, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Improve 1 project based on feedback research', hours: '2-3' },
+            { day: 35, phase: 'Monetization Setup', phaseClass: 'phase-monetization', task: 'Set up payment methods + pricing strategy', hours: '2-3' },
+            
+            // Phase 4: Outreach Grind (Days 36-45)
+            { day: 36, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 37, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 38, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 39, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 40, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 41, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 42, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 43, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 44, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
+            { day: 45, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' }
+        ];
+
+        // PWA Install prompt
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').classList.remove('hidden');
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.add('hidden');
+                });
+            }
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('executionTracker');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return {
+                startDate: new Date().toISOString().split('T')[0],
+                completions: {},
+                notes: {},
+                income: []
+            };
+        }
+
+        // Save data to localStorage
+        function saveData(data) {
+            localStorage.setItem('executionTracker', JSON.stringify(data));
+        }
+
+        let data = loadData();
+
+        // Calculate date for each day
+        function getDateForDay(day) {
+            const start = new Date(data.startDate);
+            const current = new Date(start);
+            current.setDate(start.getDate() + day - 1);
+            return current.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        }
+
+        // Render daily tasks
+        function renderTasks() {
+            const container = document.getElementById('daysList');
+            const currentDayNum = getCurrentDay();
+            
+            container.innerHTML = tasks.map(task => {
+                const isCompleted = data.completions[task.day] || false;
+                const isCurrent = task.day === currentDayNum;
+                const note = data.notes[task.day] || '';
+                
+                return `
+                    <div class="day-item ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+                        <div class="day-header">
+                            <div class="checkbox-container">
+                                <input type="checkbox" 
+                                       class="checkbox" 
+                                       id="day${task.day}" 
+                                       ${isCompleted ? 'checked' : ''}
+                                       onchange="toggleDay(${task.day})">
+                            </div>
+                            <div class="day-meta">
+                                <div class="day-number">Day ${task.day} ${isCurrent ? '🔥' : ''}</div>
+                                <div class="day-date">${getDateForDay(task.day)}</div>
+                            </div>
+                            <span class="phase-badge ${task.phaseClass}">${task.phase}</span>
+                        </div>
+                        <div class="task">
+                            ${task.task}
+                            <span class="hours">${task.hours}hrs</span>
+                        </div>
+                        <textarea class="notes-input" 
+                                  placeholder="Add notes..."
+                                  onblur="saveNote(${task.day}, this.value)">${note}</textarea>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle day completion
+        function toggleDay(day) {
+            const wasCompleted = data.completions[day] || false;
+            data.completions[day] = !wasCompleted;
+            
+            // Add to history
+            if (data.completions[day]) {
+                const historyEntry = {
+                    day: day,
+                    date: new Date().toISOString(),
+                    task: tasks.find(t => t.day === day).task
+                };
+                
+                if (!data.history) data.history = [];
+                data.history.push(historyEntry);
+            } else {
+                // Remove from history if unchecked
+                if (data.history) {
+                    data.history = data.history.filter(h => h.day !== day);
+                }
+            }
+            
+            saveData(data);
+            renderTasks();
+            updateStats();
+            renderHistory();
+        }
+
+        // Save note
+        function saveNote(day, note) {
+            data.notes[day] = note;
+            saveData(data);
+        }
+
+        // Get current day based on start date
+        function getCurrentDay() {
+            const start = new Date(data.startDate);
+            const today = new Date();
+            const diffTime = today - start;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return Math.min(Math.max(diffDays, 1), 45);
+        }
+
+        // Update statistics
+        function updateStats() {
+            const completed = Object.values(data.completions).filter(v => v).length;
+            const currentDay = getCurrentDay();
+            const remaining = 45 - currentDay + 1;
+            const rate = currentDay > 0 ? Math.round((completed / currentDay) * 100) : 0;
+            
+            document.getElementById('daysCompleted').textContent = completed;
+            document.getElementById('currentDay').textContent = currentDay;
+            document.getElementById('daysRemaining').textContent = remaining;
+            document.getElementById('completionRate').textContent = rate + '%';
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide content
+            document.getElementById('trackerTab').classList.toggle('hidden', tab !== 'tracker');
+            document.getElementById('rulesTab').classList.toggle('hidden', tab !== 'rules');
+            document.getElementById('incomeTab').classList.toggle('hidden', tab !== 'income');
+            document.getElementById('historyTab').classList.toggle('hidden', tab !== 'history');
+            
+            if (tab === 'income') renderIncome();
+            if (tab === 'history') renderHistory();
+        }
+
+        // Add income
+        function addIncome() {
+            const date = document.getElementById('incomeDate').value;
+            const client = document.getElementById('incomeClient').value;
+            const amount = parseFloat(document.getElementById('incomeAmount').value);
+            const project = document.getElementById('incomeProject').value;
+            
+            if (!date || !client || !amount || !project) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            data.income.push({ date, client, amount, project });
+            saveData(data);
+            
+            // Clear form
+            document.getElementById('incomeDate').value = '';
+            document.getElementById('incomeClient').value = '';
+            document.getElementById('incomeAmount').value = '';
+            document.getElementById('incomeProject').value = '';
+            
+            renderIncome();
+        }
+
+        // Render income list
+        function renderIncome() {
+            const list = document.getElementById('incomeList');
+            const total = data.income.reduce((sum, item) => sum + item.amount, 0);
+            
+            document.getElementById('totalIncome').textContent = total.toLocaleString('en-IN');
+            
+            list.innerHTML = data.income.map((item, index) => `
+                <div class="income-item">
+                    <div>
+                        <strong>${item.client}</strong> - ${item.project}<br>
+                        <small>${new Date(item.date).toLocaleDateString('en-GB')}</small>
+                    </div>
+                    <div class="income-amount">₹${item.amount.toLocaleString('en-IN')}</div>
+                </div>
+            `).reverse().join('');
+        }
+
+        // Render history
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (!data.history || data.history.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No completed tasks yet. Start checking off your daily goals!</p>';
+                return;
+            }
+            
+            historyList.innerHTML = data.history
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(entry => {
+                    const completedDate = new Date(entry.date);
+                    return `
+                        <div class="history-item">
+                            <div class="history-date">
+                                ✅ Day ${entry.day} - ${completedDate.toLocaleDateString('en-GB', { 
+                                    day: '2-digit', 
+                                    month: 'short', 
+                                    year: 'numeric' 
+                                })}
+                            </div>
+                            <div>${entry.task}</div>
+                        </div>
+                    `;
+                })
+                .join('');
+        }
+
+        // Initialize
+        renderTasks();
+        updateStats();
+        renderHistory();
+
+        // Set today's date in income form
+        document.getElementById('incomeDate').valueAsDate = new Date();
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
