@@ -323,26 +323,7 @@
             display: none;
         }
 
-        .install-prompt {
-            background: #4CAF50;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
 
-        .install-btn {
-            background: white;
-            color: #4CAF50;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
 
         @media (max-width: 600px) {
             body {
@@ -365,7 +346,7 @@
     </style>
 </head>
 <body>
-    
+    <div class="container">
 
         <div class="header">
             <h1>🎯 45-DAY WEB DEVELOPMENT EXECUTION TRACKER</h1>
@@ -517,28 +498,6 @@
             { day: 44, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' },
             { day: 45, phase: 'Outreach Grind', phaseClass: 'phase-outreach', task: '20 DMs + 5 proposal bids + improve 1 project daily', hours: '4-5' }
         ];
-
-        // PWA Install prompt
-        let deferredPrompt;
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installPrompt').classList.remove('hidden');
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    }
-                    deferredPrompt = null;
-                    document.getElementById('installPrompt').classList.add('hidden');
-                });
-            }
-        }
 
         // Load data from localStorage
         function loadData() {
