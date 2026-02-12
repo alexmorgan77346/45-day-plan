@@ -1,4 +1,4 @@
-const CACHE_NAME = 'execution-tracker-v3';
+const CACHE_NAME = 'execution-tracker-v4';
 const urlsToCache = [
    './manifest.json',
   './icon-192.png',
